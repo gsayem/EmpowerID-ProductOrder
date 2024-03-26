@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="SampleData\categories.json" />
+		<None Remove="SampleData\CustomerName.json" />
+		<None Remove="SampleData\products.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="SampleData\categories.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SampleData\CustomerName.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="SampleData\products.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EmpowerID.Common\EmpowerID.Common.csproj" />
+		<ProjectReference Include="..\EmpowerID.Models\EmpowerID.Models.csproj" />
+	</ItemGroup>
+
+</Project>
