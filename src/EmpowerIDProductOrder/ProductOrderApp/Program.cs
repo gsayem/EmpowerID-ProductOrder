@@ -11,11 +11,12 @@ using Microsoft.Extensions.Options;
 using ProductOrderApp.Configuration;
 using EmpowerID.Common.Extentions;
 using EmpowerID.Common;
-using EmpowerID.Seeds;
+
 namespace ProductOrderApp
 {
     internal class Program
     {
+        static Application application;
         static async Task Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
@@ -55,17 +56,23 @@ namespace ProductOrderApp
             {
                 using (IServiceScope scope = host.Services.CreateScope())
                 {
-                    Application p = scope.ServiceProvider.GetRequiredService<Application>();
-                    await p.MyLogic();
+                    application = scope.ServiceProvider.GetRequiredService<Application>();
+                    await application.StartApplication();
                 }
             }
-            Console.WriteLine("Done.");
+            Console.WriteLine("Done. Thank you.");
 
         }
 
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static async void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Unhandled Exception Occured.\n");
+            Console.WriteLine($"Exception details:{e.ExceptionObject}\n");
+            Console.ResetColor();
+
+            Console.WriteLine("\n\nStating the application itself.\n");
+            await application.StartApplication();
         }
     }
 }

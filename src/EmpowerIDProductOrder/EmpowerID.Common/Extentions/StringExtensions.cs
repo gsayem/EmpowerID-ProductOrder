@@ -4,6 +4,10 @@ namespace EmpowerID.Common.Extentions
 {
     public static class StringExtensions
     {
+        public static string ToSafeString(this string value)
+        {
+            return value ?? string.Empty;
+        }
         public static bool IsNull(this string value)
         {
             return string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(value);

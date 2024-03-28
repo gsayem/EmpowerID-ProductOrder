@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmpowerID.Repository.Migrations
 {
     [DbContext(typeof(EmpowerIDDBContext))]
-    [Migration("20240325181624_Init")]
-    partial class Init
+    [Migration("20240328174449_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

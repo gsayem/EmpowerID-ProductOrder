@@ -12,6 +12,7 @@ namespace EmpowerID.Interfaces.Repository
 
         IList<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);
         IList<TEntity> GetAll();
+        IList<TEntity> GetAllFromRawSql(string sql);
         int Count();
         int Count(Expression<Func<TEntity, bool>> predicate);
         TEntity Find(Expression<Func<TEntity, bool>> predicate);

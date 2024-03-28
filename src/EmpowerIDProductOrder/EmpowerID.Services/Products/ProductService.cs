@@ -11,13 +11,22 @@ namespace EmpowerID.Services.Products
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepositoryAsync<Category> _categoryRepositoryAsync;
         private readonly IRepositoryAsync<Order> _orderRepositoryAsync;
-        public ProductService( IRepositoryAsync<Category> categoryRepositoryAsync, IUnitOfWork unitOfWork, IRepositoryAsync<Order> orderRepositoryAsync)
+        private readonly IRepositoryAsync<Product> _productRepositoryAsync;
+        public ProductService(IRepositoryAsync<Category> categoryRepositoryAsync, IUnitOfWork unitOfWork, IRepositoryAsync<Order> orderRepositoryAsync, IRepositoryAsync<Product> productRepositoryAsync)
         {
+            _productRepositoryAsync = productRepositoryAsync;
             _categoryRepositoryAsync = categoryRepositoryAsync;
             _unitOfWork = unitOfWork;
             _orderRepositoryAsync = orderRepositoryAsync;
 
         }
+
+        public async Task<IList<Product>> GetCDCProductList(CancellationToken cancellationToken)
+        {
+            var cdcProduct = await _productRepositoryAsync.GetAllFromRawSqlAsync("exec sp_get_CDC_Data_For_Products", cancellationToken);
+            return cdcProduct;
+        }
+
         public async Task<IList<Product>> GetProductList(CancellationToken cancellationToken)
         {
             var products = new List<Product>();

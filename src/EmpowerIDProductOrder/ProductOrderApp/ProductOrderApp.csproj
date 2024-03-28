@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.ResourceManager.DataFactory" Version="1.0.0" />
+    <PackageReference Include="Azure.Search.Documents" Version="11.5.1" />
+    <PackageReference Include="Microsoft.Azure.Management.DataFactory" Version="9.3.0" />
+    <PackageReference Include="Microsoft.Azure.Search.Data" Version="10.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,10 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EmpowerID.DomainModel\EmpowerID.DomainModel.csproj" />
     <ProjectReference Include="..\EmpowerID.Infrastructure\EmpowerID.Infrastructure.csproj" />
     <ProjectReference Include="..\EmpowerID.Interfaces\EmpowerID.Interfaces.csproj" />
     <ProjectReference Include="..\EmpowerID.Repository\EmpowerID.Repository.csproj" />
-    <ProjectReference Include="..\EmpowerID.Seeds\EmpowerID.Seeds.csproj" />
     <ProjectReference Include="..\EmpowerID.Services\EmpowerID.Services.csproj" />
   </ItemGroup>
 

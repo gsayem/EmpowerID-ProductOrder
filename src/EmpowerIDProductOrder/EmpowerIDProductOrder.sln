@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmpowerID.Repository", "Emp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmpowerID.Common", "EmpowerID.Common\EmpowerID.Common.csproj", "{A84015DB-1143-4F13-B1B2-928C561CD69F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmpowerID.Seeds", "EmpowerID.Seeds\EmpowerID.Seeds.csproj", "{061F0FC1-1E78-4EC6-ADB6-DCBD56E2D411}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmpowerID.DomainModel", "EmpowerID.DomainModel\EmpowerID.DomainModel.csproj", "{C7082C72-538B-4460-90CC-CCCFE13BABA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{A84015DB-1143-4F13-B1B2-928C561CD69F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A84015DB-1143-4F13-B1B2-928C561CD69F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A84015DB-1143-4F13-B1B2-928C561CD69F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{061F0FC1-1E78-4EC6-ADB6-DCBD56E2D411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{061F0FC1-1E78-4EC6-ADB6-DCBD56E2D411}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{061F0FC1-1E78-4EC6-ADB6-DCBD56E2D411}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{061F0FC1-1E78-4EC6-ADB6-DCBD56E2D411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7082C72-538B-4460-90CC-CCCFE13BABA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7082C72-538B-4460-90CC-CCCFE13BABA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7082C72-538B-4460-90CC-CCCFE13BABA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7082C72-538B-4460-90CC-CCCFE13BABA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

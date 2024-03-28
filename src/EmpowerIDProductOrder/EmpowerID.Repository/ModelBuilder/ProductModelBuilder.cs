@@ -1,11 +1,16 @@
-﻿using EmpowerID.Models;
+﻿using EmpowerID.Common.Enums;
+using EmpowerID.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EmpowerID.Repository
 {
     public partial class EmpowerIDDBContext
     {
         public DbSet<Product> Products { set; get; }
+
+        readonly ValueConverter dataStatusValueConverter = new DataStatusValueConverter();
+
         private void ProductModelBuilder(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>().HasKey(w => w.Id);
@@ -23,6 +28,7 @@ namespace EmpowerID.Repository
             modelBuilder.Entity<Product>().HasIndex(w => w.Price).HasDatabaseName("ProductPrice_Non_Clustered_Index");
             //modelBuilder.Entity<Product>().HasIndex(w => w.Description).HasDatabaseName("ProductDescription_Non_Clustered_Index");
             modelBuilder.Entity<Product>().HasIndex(w => w.DateAddded).HasDatabaseName("ProductDateAddded_Non_Clustered_Index");
+            modelBuilder.Entity<Product>().Property(p => p.DataStatus).HasConversion(dataStatusValueConverter);
         }
     }
 }
