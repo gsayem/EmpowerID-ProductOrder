@@ -1,16 +1,11 @@
-﻿using EmpowerID.Common.Enums;
-using EmpowerID.Models;
+﻿using EmpowerID.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EmpowerID.Repository
 {
     public partial class EmpowerIDDBContext
     {
         public DbSet<Product> Products { set; get; }
-
-        readonly ValueConverter dataStatusValueConverter = new DataStatusValueConverter();
-
         private void ProductModelBuilder(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>().HasKey(w => w.Id);
@@ -22,13 +17,12 @@ namespace EmpowerID.Repository
             modelBuilder.Entity<Product>().Property(o => o.Price).HasColumnType("decimal(18,4)");
 
             modelBuilder.Entity<Product>().HasOne(p => p.Category).WithMany(p => p.Products);
-            modelBuilder.Entity<Product>().HasMany(p => p.ProductOrders).WithOne(p => p.Product);
+            //modelBuilder.Entity<Product>().HasMany(p => p.ProductOrders).WithOne(p => p.Product);
 
             modelBuilder.Entity<Product>().HasIndex(w => w.Name).IsUnique().HasDatabaseName("ProductName_Unique_NonClustered_Index");
             modelBuilder.Entity<Product>().HasIndex(w => w.Price).HasDatabaseName("ProductPrice_Non_Clustered_Index");
             //modelBuilder.Entity<Product>().HasIndex(w => w.Description).HasDatabaseName("ProductDescription_Non_Clustered_Index");
             modelBuilder.Entity<Product>().HasIndex(w => w.DateAddded).HasDatabaseName("ProductDateAddded_Non_Clustered_Index");
-            modelBuilder.Entity<Product>().Property(p => p.DataStatus).HasConversion(dataStatusValueConverter);
         }
     }
 }

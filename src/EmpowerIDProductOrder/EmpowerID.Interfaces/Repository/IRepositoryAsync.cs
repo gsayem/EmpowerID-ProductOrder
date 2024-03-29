@@ -1,4 +1,5 @@
-﻿using EmpowerID.Models;
+﻿using EmpowerID.Common.Enums;
+using EmpowerID.Models;
 using System.Linq.Expressions;
 
 namespace EmpowerID.Interfaces.Repository
@@ -8,15 +9,18 @@ namespace EmpowerID.Interfaces.Repository
         Task AddAsync(TEntity entity, CancellationToken cancellationToken);
         Task AddRangeAsync(CancellationToken cancellationToken, params TEntity[] entities);
         Task RemoveAsync(TEntity entity, CancellationToken cancellationToken);
+        Task RemoveRangeAsync(CancellationToken cancellationToken, params TEntity[] entities);
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
+        Task UpdateRangeAsync(CancellationToken cancellationToken, params TEntity[] entities);
         Task<IList<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
         Task<IList<TEntity>> GetAllAsync(CancellationToken cancellationToken);
         Task<IList<TEntity>> GetAllFromRawSqlAsync(string sql, CancellationToken cancellationToken);
         Task<int> CountAsync(CancellationToken cancellationToken = default);
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
         Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
-        Task<TEntity> GetByIdAsync(string id, CancellationToken cancellationToken);
+        //Task<TEntity> GetByIdAsync(string id, CancellationToken cancellationToken);
         void Detach(TEntity entity);
         void DetachAll();
+        void ChangeDatabase(DatabaseConnection databaseConnection);
     }
 }

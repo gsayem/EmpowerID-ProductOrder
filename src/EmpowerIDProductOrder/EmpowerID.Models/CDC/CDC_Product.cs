@@ -1,11 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EmpowerID.Common.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EmpowerID.Models
+namespace EmpowerID.Models.CDC
 {
-    [Table("Products")]
-    public class Product : BaseModel
+    public class CDC_Product : BaseModel
     {
+        [Column("DataStatus")]
+        public DataStatus DataStatus { set; get; }
+
         [Column("product_id")]
         [MaxLength(26)]
         public string Id { get; set; }
@@ -29,6 +32,5 @@ namespace EmpowerID.Models
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
 
-        //public virtual ICollection<ProductOrder> ProductOrders { get; set; }
     }
 }

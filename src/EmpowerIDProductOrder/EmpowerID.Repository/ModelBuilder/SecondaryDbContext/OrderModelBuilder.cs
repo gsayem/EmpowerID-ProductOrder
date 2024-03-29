@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EmpowerID.Repository
 {
-    public partial class EmpowerIDDBContext
+    public partial class SecondaryEmpowerIDDBContext
     {
         public DbSet<Order> Orders { set; get; }
         private void OrderModelBuilder(ModelBuilder modelBuilder)
@@ -15,7 +15,7 @@ namespace EmpowerID.Repository
 
             modelBuilder.Entity<Order>().HasIndex(w => w.OrderDate).HasDatabaseName("OrderDate_NonClustered_Index");
 
-            modelBuilder.Entity<Order>().HasMany(p => p.ProductOrders).WithOne(p => p.Order);
+            //modelBuilder.Entity<Order>().HasMany(p => p.ProductOrders).WithOne(p => p.Order);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿
+using EmpowerID.Common.Enums;
 using EmpowerID.Models;
 using System.Linq.Expressions;
 
@@ -16,9 +17,10 @@ namespace EmpowerID.Interfaces.Repository
         int Count();
         int Count(Expression<Func<TEntity, bool>> predicate);
         TEntity Find(Expression<Func<TEntity, bool>> predicate);
-        TEntity GetById(string id);
+        //TEntity GetById(string id);
 
         void Detach(TEntity entity);
         void DetachAll();
+        void ChangeDatabase(DatabaseConnection databaseConnection);
     }
 }

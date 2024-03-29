@@ -1,4 +1,5 @@
-﻿using EmpowerID.Models;
+﻿using EmpowerID.Common.Enums;
+using EmpowerID.Models;
 
 namespace EmpowerID.Interfaces.Repository
 {
@@ -10,5 +11,7 @@ namespace EmpowerID.Interfaces.Repository
         void DetachAll<TSet>() where TSet : class, IBaseModel;
         void DetachAllAsync<TSet>() where TSet : class, IBaseModel;
         void SaveChanges();
+        void ChangeDatabase(DatabaseConnection databaseConnection);
+
     }
 }

@@ -1,16 +1,14 @@
-﻿using EmpowerID.Infrastructure.Configuration;
-using EmpowerID.Interfaces.Services.Products;
+﻿using EmpowerID.Common;
+using EmpowerID.Common.Extentions;
+using EmpowerID.Interfaces.Services;
 using EmpowerID.Repository;
-using EmpowerID.Services.Products;
+using EmpowerID.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using ProductOrderApp.Configuration;
-using EmpowerID.Common.Extentions;
-using EmpowerID.Common;
 
 namespace ProductOrderApp
 {
@@ -40,9 +38,24 @@ namespace ProductOrderApp
                             });
                         }
                     }, ServiceLifetime.Transient);
+                    services.AddDbContext<SecondaryEmpowerIDDBContext>((provider, options) =>
+                    {
+                        var _connectionString = context.Configuration.GetValue<string>("ConnStringSecondary");
+                        if (_connectionString.IsNotNull())
+                        {
+                            options.UseSqlServer(_connectionString, options =>
+                            {
+                                options.CommandTimeout(AppConstant.DB_COMMAND_TIME_OUT_IN_SEC);
+                                options.EnableRetryOnFailure(AppConstant.DB_ENABLE_RETRY_ON_FAILURE);
+                            });
+                        }
+                    }, ServiceLifetime.Transient);
                     services.AddAppSettingsConfiguration(context.Configuration);
                     services.AddDataRepositories();
+                    services.AddTransient<ICategoryService, CategoryService>();
                     services.AddTransient<IProductService, ProductService>();
+                    services.AddTransient<IOrderService, OrderService>();
+
                     services.AddScoped<Application>();
                 })
                 .ConfigureLogging((context, cfg) =>

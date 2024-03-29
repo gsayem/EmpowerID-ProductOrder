@@ -6,6 +6,9 @@ namespace EmpowerID.Infrastructure.Configuration
 
         [JsonPropertyName("ConnString")]
         public string ConnString { get; set; }
+        
+        [JsonPropertyName("ConnStringSecondary")]
+        public string ConnStringSecondary { get; set; }
         [JsonPropertyName("TenantId")]
         public string TenantId { get; set; }
         [JsonPropertyName("SubscriptionId")]

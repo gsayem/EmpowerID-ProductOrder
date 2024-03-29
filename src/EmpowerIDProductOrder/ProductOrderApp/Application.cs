@@ -9,23 +9,30 @@ using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using EmpowerID.DomainModel;
 using EmpowerID.Infrastructure.Configuration;
-using EmpowerID.Interfaces.Services.Products;
+using EmpowerID.Interfaces.Services;
+using EmpowerID.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using System.Threading;
 
 namespace ProductOrderApp
 {
     public class Application
     {
         private readonly ILogger<Application> _logger;
+        private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
-
+        private readonly IOrderService _orderService;
         private readonly ConfigAppSettings _configuration;
-        public Application(ILogger<Application> logger, IProductService productService, IOptions<ConfigAppSettings> configuration)
+        public Application(ILogger<Application> logger,
+             ICategoryService categoryService, IProductService productService, IOrderService orderService,
+            IOptions<ConfigAppSettings> configuration)
         {
             _logger = logger;
+            _categoryService = categoryService;
             _productService = productService;
+            _orderService = orderService;
             _configuration = configuration.Value;
         }
 
@@ -36,10 +43,10 @@ namespace ProductOrderApp
 
         private async Task OpenApplication(CancellationToken cancellationToken)
         {
-            Console.WriteLine("ETL Console Application");
-            Console.WriteLine("1. Initiate and monitor ETL pipelines");
-            Console.WriteLine("2. Search the data using Azure Cognitive Search");
-            Console.WriteLine("3. CDC");
+            Console.WriteLine("ETL Console Application.");
+            Console.WriteLine("1. Initiate and monitor ETL pipelines.");
+            Console.WriteLine("2. Search the data using Azure Cognitive Search.");
+            Console.WriteLine("3. CDC - Change data capture and write into secondary database.");
             Console.WriteLine("Select an option:");
             switch (Console.ReadLine())
             {
@@ -50,7 +57,7 @@ namespace ProductOrderApp
                     await CreateSearchClientForQueries();
                     break;
                 case "3":
-                    await _productService.GetCDCProductList(cancellationToken);
+                    await CDCSyncDestinationDatabase(cancellationToken);
                     break;
                 default:
                     return;
@@ -59,6 +66,12 @@ namespace ProductOrderApp
             await RestartApplication(cancellationToken);
         }
 
+        private async Task CDCSyncDestinationDatabase(CancellationToken cancellationToken)
+        {
+            await _categoryService.SyncCDCCategoriesAsync(cancellationToken);
+            await _productService.SyncCDCProductList(cancellationToken);
+            await _orderService.SyncCDCOrdersAsync(cancellationToken);
+        }
         private async Task RestartApplication(CancellationToken cancellationToken)
         {
             Console.WriteLine("Would you like to restart? Press r to restart.");

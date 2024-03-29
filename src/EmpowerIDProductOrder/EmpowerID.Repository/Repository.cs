@@ -1,6 +1,4 @@
-﻿
-using EmpowerID.Interfaces.Repository;
-using EmpowerID.Models;
+﻿using EmpowerID.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -8,7 +6,7 @@ namespace EmpowerID.Repository
 {
     public class Repository<TEntity> : UOWRepository<TEntity> where TEntity : class, IBaseModel
     {
-        public Repository(IDataContext dataContext) : base(dataContext)
+        public Repository(EmpowerIDDBContext dataContext, SecondaryEmpowerIDDBContext secondaryDataContext) : base(dataContext, secondaryDataContext)
         {
         }
 

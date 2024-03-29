@@ -1,4 +1,5 @@
-﻿using EmpowerID.Interfaces.Repository;
+﻿using EmpowerID.Common.Enums;
+using EmpowerID.Interfaces.Repository;
 using EmpowerID.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,12 +8,16 @@ namespace EmpowerID.Repository
 {
     public class UOWRepository<TEntity> : IRepository<TEntity>, IRepositoryAsync<TEntity> where TEntity : class, IBaseModel
     {
-        public UOWRepository(IDataContext dataContext)
+        public IDataContext DataContext { get; private set; }
+        private readonly EmpowerIDDBContext _primaryDbContext;
+        private readonly SecondaryEmpowerIDDBContext _secondaryDbContext;
+        public UOWRepository(EmpowerIDDBContext dataContext, SecondaryEmpowerIDDBContext secondaryDataContext)
         {
+            _primaryDbContext = dataContext;
+            _secondaryDbContext = secondaryDataContext;
             this.DataContext = dataContext ?? throw new ArgumentNullException(nameof(dataContext));
         }
 
-        public IDataContext DataContext { get; }
 
         public virtual void Add(TEntity entity)
         {
@@ -68,6 +73,11 @@ namespace EmpowerID.Repository
             DataContext.Entry(entity).State = EntityState.Deleted;
             await Task.CompletedTask;
         }
+        public virtual async Task RemoveRangeAsync(CancellationToken cancellationToken, params TEntity[] entities)
+        {
+            DataContext.Set<TEntity>().RemoveRange(entities);
+            await Task.CompletedTask;
+        }
 
         public virtual async Task<IList<TEntity>> GetAllAsync(CancellationToken cancellationToken)
         {
@@ -77,6 +87,11 @@ namespace EmpowerID.Repository
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             DataContext.Entry(entity).State = EntityState.Modified;
+            await Task.CompletedTask;
+        }
+        public virtual async Task UpdateRangeAsync(CancellationToken cancellationToken, params TEntity[] entities)
+        {
+            DataContext.Set<TEntity>().UpdateRange(entities);
             await Task.CompletedTask;
         }
 
@@ -128,17 +143,6 @@ namespace EmpowerID.Repository
             }
         }
 
-
-        public TEntity GetById(string id)
-        {
-            return DataContext.Set<TEntity>().SingleOrDefault(/*i => i.Id == id*/);
-        }
-
-        public async Task<TEntity> GetByIdAsync(string id, CancellationToken cancellationToken)
-        {
-            return await DataContext.Set<TEntity>().SingleOrDefaultAsync(/*i => i.Id == id,*/ cancellationToken);
-        }
-
         public IList<TEntity> GetAllFromRawSql(string sql)
         {
             //DataContext.Set<TEntity>().FromSqlRaw("sp_get_CDC_Data_For_Categories");
@@ -149,6 +153,16 @@ namespace EmpowerID.Repository
         {
             //DataContext.Set<TEntity>().FromSqlRaw("sp_get_CDC_Data_For_Categories");
             return await DataContext.Set<TEntity>().FromSqlRaw(sql).ToListAsync(cancellationToken);
+        }
+
+        public void ChangeDatabase(DatabaseConnection databaseConnection)
+        {
+            this.DataContext = databaseConnection switch
+            {
+                DatabaseConnection.Primary => _primaryDbContext,
+                DatabaseConnection.Secondary => _secondaryDbContext,
+                _ => _primaryDbContext,
+            };
         }
     }
 }

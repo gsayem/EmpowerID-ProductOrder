@@ -9,18 +9,18 @@ using Microsoft.Extensions.Options;
 
 namespace EmpowerID.Repository
 {
-    public partial class EmpowerIDDBContext : DbContext, IDataContext
+    public partial class SecondaryEmpowerIDDBContext : DbContext, IDataContext
     {
         private readonly IOptions<ConfigAppSettings> _configuration;
         private DbContextOptionsBuilder _optionsBuilder;
         protected string _connectionString { private set; get; }
-        public EmpowerIDDBContext(DbContextOptions<EmpowerIDDBContext> options, IOptions<ConfigAppSettings> configuration) : base(options)
+        public SecondaryEmpowerIDDBContext(DbContextOptions<SecondaryEmpowerIDDBContext> options, IOptions<ConfigAppSettings> configuration) : base(options)
         {
             _configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            _connectionString = _configuration.Value.ConnString;
+            _connectionString = _configuration.Value.ConnStringSecondary;
             if (_connectionString.IsNotNull())
             {
                 optionsBuilder.UseSqlServer(_connectionString, options =>
@@ -119,10 +119,30 @@ namespace EmpowerID.Repository
             OrderModelBuilder(modelBuilder);
             ProductModelBuilder(modelBuilder);
             //ProductOrderModelBuilder(modelBuilder);
+        }
 
-            CDC_ProductModelBuilder(modelBuilder);
-            CDC_CategoryModelBuilder(modelBuilder);
-            CDC_OrderModelBuilder(modelBuilder);
+        public void ChangeDatabase(DatabaseConnection databaseConnection)
+        {
+            switch (databaseConnection)
+            {
+                case DatabaseConnection.Primary:
+                    _connectionString = _configuration.Value.ConnString;
+                    break;
+                case DatabaseConnection.Secondary:
+                    _connectionString = _configuration.Value.ConnStringSecondary;
+                    break;
+                default:
+                    break;
+            }
+            if (_connectionString.IsNotNull())
+            {
+                _optionsBuilder.UseSqlServer(_connectionString, options =>
+                {
+                    options.CommandTimeout(AppConstant.DB_COMMAND_TIME_OUT_IN_SEC);
+                    options.EnableRetryOnFailure(AppConstant.DB_ENABLE_RETRY_ON_FAILURE);
+                }).UseLazyLoadingProxies();
+            }
+            base.OnConfiguring(_optionsBuilder);
         }
     }
 }

@@ -5,8 +5,6 @@ namespace EmpowerID.Models
 {
     public abstract class BaseModel : IBaseModel
     {
-        //[NotMapped]
-        [Column("DataStatus")]
-        public virtual DataStatus DataStatus { set; get; }
+        
     }
 }
