@@ -50,9 +50,25 @@ namespace EmpowerID.Services
                 if (insertedOrders != null && insertedOrders.Count > 0)
                 {
                     _logger.LogInformation($"Total CDC inserted orders found : {insertedOrders.Count}");
+
+                    //Inserted Data but already present in the Secondary DB. Might be CDC Bug.
+                    var iuIds = insertedOrders.Select(i => i.Id).ToList();
+                    var iuOrders = await uowOrderRepository.FindAllAsync(s => iuIds.Contains(s.Id), cancellationToken);
+                    iuOrders.ToList().ForEach(o =>
+                    {
+                        var uo = insertedOrders.First(s => s.Id == o.Id);
+                        o.OrderDate = uo.OrderDate;
+                        o.CustomerName = uo.CustomerName;
+                    });
+                    await uowOrderRepository.UpdateRangeAsync(cancellationToken, [.. iuOrders]);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    //Actual Inserted Items
+                    var iuOrdersIds = iuOrders.Select(d => d.Id);
+                    var iiOrders = insertedOrders.FindAll(s => !iuOrdersIds.Contains(s.Id));
                     var iOrders = new List<Order>();
 
-                    insertedOrders.ForEach(io =>
+                    iiOrders.ForEach(io =>
                     {
                         iOrders.Add(new Order { Id = io.Id, CustomerName = io.CustomerName, OrderDate = io.OrderDate });
                     });

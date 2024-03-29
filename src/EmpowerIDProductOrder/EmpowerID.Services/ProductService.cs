@@ -52,8 +52,29 @@ namespace EmpowerID.Services
                 if (insertedProducts != null && insertedProducts.Any())
                 {
                     _logger.LogInformation($"Total CDC inserted product found : {insertedProducts.Count}");
+
+                    //Inserted Data but already present in the Secondary DB. Might be CDC Bug.
+                    var iuIds = insertedProducts.Select(i => i.Id).ToList();
+                    var iuProducts = await uowProductRepository.FindAllAsync(s => iuIds.Contains(s.Id), cancellationToken);
+                    iuProducts.ToList().ForEach(p =>
+                    {
+                        var up = insertedProducts.First(s => s.Id == p.Id);
+                        p.Name = up.Name;
+                        p.Price = up.Price;
+                        p.ImageURL = up.ImageURL;
+                        p.CategoryId = up.CategoryId;
+                        p.DateAddded = up.DateAddded;
+                        p.Description = up.Description;
+                    });
+                    await uowProductRepository.UpdateRangeAsync(cancellationToken, [.. iuProducts]);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    //Actual Inserted Items
+                    var iuProductsIds = iuProducts.Select(d => d.Id);
+                    var iiProducts = insertedProducts.FindAll(s => !iuProductsIds.Contains(s.Id));
                     var iProducts = new List<Product>();
-                    insertedProducts.ForEach(ip =>
+
+                    iiProducts.ForEach(ip =>
                     {
                         iProducts.Add(new Product
                         {
@@ -66,9 +87,9 @@ namespace EmpowerID.Services
                             Price = ip.Price
                         });
                     });
+
                     await uowProductRepository.AddRangeAsync(cancellationToken, [.. iProducts]);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
-
                 }
 
                 //Updated Products

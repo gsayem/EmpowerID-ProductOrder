@@ -50,13 +50,33 @@ namespace EmpowerID.Services
                 if (insertedCategories != null && insertedCategories.Any())
                 {
                     _logger.LogInformation($"Total CDC inserted categories found : {insertedCategories.Count}");
+
+                    //Inserted Data but already present in the Secondary DB. Might be CDC Bug.
+                    var iuIds = insertedCategories.Select(i => i.Id).ToList();
+                    var iuCategories = await uowCategoryRepository.FindAllAsync(s => iuIds.Contains(s.Id), cancellationToken);
+                    iuCategories.ToList().ForEach(c =>
+                    {
+                        var uc = insertedCategories.First(s => s.Id == c.Id);
+                        c.Name = uc.Name;
+                        c.Id = uc.Id;
+                    });
+                    await uowCategoryRepository.UpdateRangeAsync(cancellationToken, [.. iuCategories]);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+
+                    //Actual Inserted Items
+                    var iuCategoriesIds = iuCategories.Select(d => d.Id);
+                    var iiCategories = insertedCategories.FindAll(s => !iuCategoriesIds.Contains(s.Id));
                     var iCategories = new List<Category>();
-                    insertedCategories.ForEach(ic =>
+
+                    iiCategories.ForEach(ic =>
                     {
                         iCategories.Add(new Category { Id = ic.Id, Name = ic.Name });
                     });
+
                     await uowCategoryRepository.AddRangeAsync(cancellationToken, [.. iCategories]);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
                 }
 
                 //Updated Categories
