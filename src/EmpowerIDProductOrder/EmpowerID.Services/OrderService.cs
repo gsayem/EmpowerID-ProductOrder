@@ -45,14 +45,19 @@ namespace EmpowerID.Services
                 }
 
                 //Inserted Orders
-                var insertedOrdersIds = cdcOrders.Where(p => p.DataStatus == DataStatus.Inserted).Select(s => s.Id);
-                var insertedOrders = await uowOrderRepository.FindAllAsync(s => insertedOrdersIds.Contains(s.Id), cancellationToken);
+                var insertedOrders = cdcOrders.Where(p => p.DataStatus == DataStatus.Inserted).ToList();
 
-                if (insertedOrders != null && insertedOrders.Any())
+                if (insertedOrders != null && insertedOrders.Count > 0)
                 {
                     _logger.LogInformation($"Total CDC inserted orders found : {insertedOrders.Count}");
+                    var iOrders = new List<Order>();
 
-                    await uowOrderRepository.AddRangeAsync(cancellationToken, [.. insertedOrders]);
+                    insertedOrders.ForEach(io =>
+                    {
+                        iOrders.Add(new Order { Id = io.Id, CustomerName = io.CustomerName, OrderDate = io.OrderDate });
+                    });
+
+                    await uowOrderRepository.AddRangeAsync(cancellationToken, [.. iOrders]);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
 

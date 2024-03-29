@@ -145,13 +145,11 @@ namespace EmpowerID.Repository
 
         public IList<TEntity> GetAllFromRawSql(string sql)
         {
-            //DataContext.Set<TEntity>().FromSqlRaw("sp_get_CDC_Data_For_Categories");
             return DataContext.Set<TEntity>().FromSqlRaw(sql).ToList();
         }
 
         public async Task<IList<TEntity>> GetAllFromRawSqlAsync(string sql, CancellationToken cancellationToken)
         {
-            //DataContext.Set<TEntity>().FromSqlRaw("sp_get_CDC_Data_For_Categories");
             return await DataContext.Set<TEntity>().FromSqlRaw(sql).ToListAsync(cancellationToken);
         }
 

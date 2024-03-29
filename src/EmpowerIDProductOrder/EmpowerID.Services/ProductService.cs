@@ -47,14 +47,26 @@ namespace EmpowerID.Services
                 }
 
                 //Inserted Products
-                var insertedProductIds = cdcProducts.Where(p => p.DataStatus == DataStatus.Inserted).Select(s => s.Id);
-                var insertedProducts = await uowProductRepository.FindAllAsync(s => insertedProductIds.Contains(s.Id), cancellationToken);
+                var insertedProducts = cdcProducts.Where(p => p.DataStatus == DataStatus.Inserted).ToList();
 
                 if (insertedProducts != null && insertedProducts.Any())
                 {
                     _logger.LogInformation($"Total CDC inserted product found : {insertedProducts.Count}");
-
-                    await uowProductRepository.AddRangeAsync(cancellationToken, [.. insertedProducts]);
+                    var iProducts = new List<Product>();
+                    insertedProducts.ForEach(ip =>
+                    {
+                        iProducts.Add(new Product
+                        {
+                            Id = ip.Id,
+                            Name = ip.Name,
+                            CategoryId = ip.CategoryId,
+                            DateAddded = ip.DateAddded,
+                            Description = ip.Description,
+                            ImageURL = ip.ImageURL,
+                            Price = ip.Price
+                        });
+                    });
+                    await uowProductRepository.AddRangeAsync(cancellationToken, [.. iProducts]);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 }

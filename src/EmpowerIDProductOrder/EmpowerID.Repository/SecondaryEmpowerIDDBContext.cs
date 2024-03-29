@@ -60,7 +60,6 @@ namespace EmpowerID.Repository
             }
             catch
             {
-                // dont care about the exception here, just want the connection string or "In Memory ? for Unit test"
             }
 
             return dbName;

@@ -25,10 +25,10 @@ namespace EmpowerID.Services
             //Get the CDC Product From Primary/Source Database
             var cdcCategories = await _cdc_CategoryRepositoryAsync.GetAllFromRawSqlAsync("exec sp_get_CDC_Data_For_Categories", cancellationToken);
 
-            _unitOfWork.ChangeDatabase(Common.Enums.DatabaseConnection.Secondary);
+            _unitOfWork.ChangeDatabase(DatabaseConnection.Secondary);
             var uowCategoryRepository = _unitOfWork.GetRepositoryAsync<Category>();
             //Change the connection to Secondary/Destination Database
-            uowCategoryRepository.ChangeDatabase(Common.Enums.DatabaseConnection.Secondary);
+            uowCategoryRepository.ChangeDatabase(DatabaseConnection.Secondary);
             _logger.LogInformation($"Total CDC Categories found : {cdcCategories.Count}");
 
             if (cdcCategories.Any())
@@ -45,13 +45,17 @@ namespace EmpowerID.Services
                 }
 
                 //Inserted Categories
-                var insertedCategoriesIds = cdcCategories.Where(p => p.DataStatus == DataStatus.Inserted).Select(s => s.Id);
-                var insertedCategories = await uowCategoryRepository.FindAllAsync(s => insertedCategoriesIds.Contains(s.Id), cancellationToken);
+                var insertedCategories = cdcCategories.Where(p => p.DataStatus == DataStatus.Inserted).ToList();
 
                 if (insertedCategories != null && insertedCategories.Any())
                 {
                     _logger.LogInformation($"Total CDC inserted categories found : {insertedCategories.Count}");
-                    await uowCategoryRepository.AddRangeAsync(cancellationToken, [.. insertedCategories]);
+                    var iCategories = new List<Category>();
+                    insertedCategories.ForEach(ic =>
+                    {
+                        iCategories.Add(new Category { Id = ic.Id, Name = ic.Name });
+                    });
+                    await uowCategoryRepository.AddRangeAsync(cancellationToken, [.. iCategories]);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
 

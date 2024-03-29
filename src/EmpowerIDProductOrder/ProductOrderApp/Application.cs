@@ -10,11 +10,9 @@ using Azure.Search.Documents.Models;
 using EmpowerID.DomainModel;
 using EmpowerID.Infrastructure.Configuration;
 using EmpowerID.Interfaces.Services;
-using EmpowerID.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
-using System.Threading;
 
 namespace ProductOrderApp
 {
